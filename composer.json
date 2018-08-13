@@ -1,0 +1,18 @@
+{
+    "name": "noobphp/error-control",
+    "description": "simple error-control",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "pxb",
+            "email": "768984347@qq.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "Noob\\ErrorControl\\": "src/"
+        }
+    }
+}
