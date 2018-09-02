@@ -1,7 +1,9 @@
 <?php
 namespace Noob\ErrorControl;
 
+use Exception;
 use ErrorException;
+use Noob\ErrorControl\Lib\ExceptionSubject;
 
 /**
  * Created by PhpStorm.
@@ -10,28 +12,21 @@ use ErrorException;
  * Time: 下午1:40
  */
 
-class ErrorControl
+class ErrorControl implements ExceptionSubject
 {
-    protected $call_func;
+    use ExceptionSubjectTrait;
 
     public function register()
     {
         set_exception_handler([$this, 'exception_handler']);
         set_error_handler([$this, 'error_handler']);
         register_shutdown_function([$this, 'register_shutdown_handler']);
-    }
-
-    public function setCallFunc($call_func)
-    {
-        $this->call_func = $call_func;
         return $this;
     }
 
     public function exception_handler($e)
     {
-        if ($this->call_func) {
-            call_user_func($this->call_func, $e);
-        }
+        $this->notifyObservers($e);
     }
 
     public function error_handler($errno, $errstr, $errfile, $errline)
@@ -43,6 +38,14 @@ class ErrorControl
     {
         if ($error = error_get_last()) {
             $this->exception_handler(new ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line']));
+        }
+    }
+
+    public function notifyObservers(Exception $e)
+    {
+        // TODO: Implement notifyObservers() method.
+        foreach ($this->observers as $observer) {
+            call_user_func([$observer, 'catchException'], $e);
         }
     }
 }

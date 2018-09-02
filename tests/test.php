@@ -1,6 +1,8 @@
 <?php
 
 use Noob\ErrorControl\ErrorControl;
+use Noob\ErrorControl\Lib\ExceptionSubject;
+use Noob\ErrorControl\Lib\ExceptionObserver;
 
 require ("../vendor/autoload.php");
 /**
@@ -13,12 +15,55 @@ ini_set('display_errors', true);
 ini_set('error_reporting', E_ALL);
 var_dump(PHP_VERSION);
 
-(new ErrorControl())->setCallFunc([new Test(), 'gg'])->register();
-
-class Test
+class Test implements ExceptionObserver
 {
-    public function gg($e)
+    protected $error_subject;
+
+    public function __construct(ExceptionSubject $subject)
     {
-        echo 'hh';
+        $this->error_subject = $subject;
+        $subject->addObserver($this);
+    }
+
+    public function catchException(Exception $e)
+    {
+        // TODO: Implement catchException() method.
+        echo "this is test\n";
+        if ($e instanceof MyException) {
+            echo "this is my exception";
+        }
+        var_dump($e);
     }
 }
+
+class Test2 implements ExceptionObserver
+{
+    protected $error_subject;
+
+    public function __construct(ExceptionSubject $subject)
+    {
+        $this->error_subject = $subject;
+        $subject->addObserver($this);
+    }
+
+    public function catchException(Exception $e)
+    {
+        // TODO: Implement catchException() method.
+        echo "this is test222\n";
+        var_dump($e);
+    }
+}
+
+class MyException extends Exception
+{
+
+}
+
+$error_control = (new ErrorControl())->register();
+$test = new Test($error_control);
+$test2 = new Test2($error_control);
+//$error_control->removeObserver($test2);
+
+//throw new MyException('hello');
+
+$a = new MyTest();
