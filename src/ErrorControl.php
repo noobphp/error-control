@@ -16,6 +16,12 @@ class ErrorControl implements ExceptionSubject
 {
     use ExceptionSubjectTrait;
 
+    protected static $error_obj;
+
+    protected function __construct()
+    {
+    }
+
     public function register()
     {
         set_exception_handler([$this, 'exception_handler']);
@@ -47,5 +53,19 @@ class ErrorControl implements ExceptionSubject
         foreach ($this->observers as $observer) {
             call_user_func([$observer, 'catchException'], $e);
         }
+    }
+
+    public function __clone()
+    {
+        // TODO: Implement __clone() method.
+        return self::getInstance();
+    }
+
+    public static function getInstance()
+    {
+        if (!self::$error_obj) {
+            self::$error_obj = new ErrorControl();
+        }
+        return self::$error_obj;
     }
 }

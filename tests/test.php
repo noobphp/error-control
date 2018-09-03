@@ -59,7 +59,7 @@ class MyException extends Exception
 
 }
 
-$error_control = (new ErrorControl())->register();
+$error_control = ErrorControl::getInstance()->register();
 $test = new Test($error_control);
 $test2 = new Test2($error_control);
 //$error_control->removeObserver($test2);
